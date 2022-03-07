@@ -21,17 +21,22 @@
     </style>
 </head>
 <body>
-    <textarea id="notes" disabled autofocus onkeyup="saveText()" style="width: 100%; height: 800px"></textarea>
+    <textarea id="notes" disabled autofocus onkeyup="saveText()" style="width: 100%; height: 100vh"></textarea>
+
     <script src="https://unpkg.com/imus@1.3.0/dist/bundle.js"></script>
     <script>
         const NAME_STORE = 'store';
         const KEY = 'notes'
         const ELEMENT_ID = 'notes'
+
         const setter = (store) => localStorage.setItem(NAME_STORE, JSON.stringify(store));
         const getter = () => JSON.parse(localStorage.getItem(NAME_STORE))
+
         Imus.setConnector(setter, getter);
+
         document.getElementById(ELEMENT_ID).value = Imus.getStore(KEY) || '';
         document.getElementById(ELEMENT_ID).disabled = false;
+
         function saveText() {
             const notes = document.getElementById(ELEMENT_ID).value
             Imus.dispatch(KEY, notes);
