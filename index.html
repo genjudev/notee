@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>notee</title>
+    <style>
+        body, textarea {
+            background-color: #101820FF;
+            color: #F2AA4CFF;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        textarea {
+            border: none;
+            resize: none;
+        }
+        textarea:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="notes" disabled autofocus onkeyup="saveText()" style="width: 100%; height: 800px"></textarea>
+    <script src="https://unpkg.com/imus@1.3.0/dist/bundle.js"></script>
+    <script>
+        const setter = (store) => localStorage.setItem('store', JSON.stringify(store));
+        const getter = () => JSON.parse(localStorage.getItem('store'))
+        Imus.setConnector(setter, getter);
+        document.getElementById('notes').value = Imus.getStore('notes') || '';
+        document.getElementById('notes').disabled = false;
+        function saveText() {
+            const notes = document.getElementById('notes').value
+            Imus.dispatch('notes', notes);
+        }
+    </script>
+</body>
+</html>
