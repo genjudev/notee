@@ -14,6 +14,11 @@
         textarea {
             border: none;
             resize: none;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            height: 100vh;
+            width: 100%;
         }
         textarea:focus {
             outline: none;
@@ -21,7 +26,7 @@
     </style>
 </head>
 <body>
-    <textarea id="notes" disabled autofocus onkeyup="saveText()" style="width: 100%; height: 100vh"></textarea>
+    <textarea id="notes" disabled autofocus onkeyup="saveText()"></textarea>
 
     <script src="https://unpkg.com/imus@1.3.0/dist/bundle.js"></script>
     <script>
