@@ -27,7 +27,7 @@ export default function useStore(initTabs: any) {
     };
 
     const updateData = async () => {
-        const res = await fetch('http://localhost:3000/api/tabs', {
+        const res = await fetch('https://notee.chimpsol.com/api/tabs', {
             method: 'POST',
             body: JSON.stringify({tabs}),
         });
