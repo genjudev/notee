@@ -3,11 +3,13 @@ import {setConnector, dispatch, getStore} from 'imus';
 
 const NAME_STORE = 'store';
 
-export default function useStore() {
-    const [tabs, setTabs] = React.useState<
-        {name: string; id: number; content: string}[]
-    >([]);
+export default function useStore(initTabs: any) {
+    const [tabs, setTabs] =
+        React.useState<{name: string; id: number; content: string}[]>(initTabs);
     const [tabActive, setTabActive] = React.useState(0);
+    const [lastSave, setLastSave] = React.useState('');
+
+    if (initTabs) dispatch('tabs', initTabs);
 
     const createTab = () => {
         const newTabs = [
@@ -22,6 +24,20 @@ export default function useStore() {
         dispatch('tab_active', tabs.length);
         setTabs(newTabs);
         setTabActive(tabs.length);
+    };
+
+    const updateData = async () => {
+        const res = await fetch('http://localhost:3000/api/tabs', {
+            method: 'POST',
+            body: JSON.stringify({tabs}),
+        });
+        if (res.ok) {
+            const json = await res.json();
+            const _date = new Date().toString();
+            setLastSave(_date);
+            dispatch('tabs', tabs);
+            dispatch('last_save', _date);
+        }
     };
 
     const changeTab = (tabId: number) => {
@@ -51,10 +67,19 @@ export default function useStore() {
         const _tabs = getStore('tabs');
         setTabs(_tabs || []);
         setTabActive(getStore('tab_active') || 0);
+        setLastSave(getStore('last_save') || '');
 
         if (!_tabs) {
             createTab();
         }
     }, []);
-    return {tabs, tabActive, createTab, updateTab, changeTab};
+    return {
+        tabs,
+        tabActive,
+        lastSave,
+        createTab,
+        updateTab,
+        changeTab,
+        updateData,
+    };
 }

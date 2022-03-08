@@ -3,11 +3,42 @@ import {useEffect, useState} from 'react';
 import Head from 'next/head';
 import ScrollMenu from '../components/Menu/ScrollMenu';
 import styles from '../styles/Home.module.css';
-import {subscribe, getStore, dispatch} from 'imus';
 import useStore from '../hooks/useStore';
+import {
+    getSession,
+    GetSessionParams,
+    signIn,
+    useSession,
+} from 'next-auth/react';
+import {dispatch, getStore} from 'imus';
+import Tab from '../models/Tab';
+import dbConnect from '../utils/database';
 
-const Home: NextPage = () => {
-    const {tabs, tabActive, createTab, updateTab, changeTab} = useStore();
+export async function getServerSideProps(
+    context: GetSessionParams | undefined,
+) {
+    const session = await getSession(context);
+    if (!session) return {props: {initTabs: []}};
+    await dbConnect();
+
+    //@ts-ignore
+    const tab = await Tab.findOne({$eq: {userId: session.account.sub}});
+    return {
+        props: {initTabs: tab?.tabs || []}, // will be passed to the page component as props
+    };
+}
+
+const Home: NextPage = ({initTabs}: any) => {
+    const {
+        tabs,
+        tabActive,
+        lastSave,
+        createTab,
+        updateTab,
+        changeTab,
+        updateData,
+    } = useStore(initTabs);
+    const {data: session}: {data: any} = useSession();
     const [textAreaContent, setTextAreaContent] = useState('');
 
     const handleTabClick = (tabId: number) => {
@@ -39,13 +70,36 @@ const Home: NextPage = () => {
                             handleClickTab={handleTabClick}
                         />
                     )}
-                    <button onClick={() => createTab()}>+</button>
+                    <button
+                        className={styles.addBtn}
+                        onClick={() => createTab()}
+                    >
+                        +
+                    </button>
+                    <button className={styles.saveBtn} onClick={updateData}>
+                        Save
+                    </button>
                 </div>
-                <div className={styles.mainItem}>Browser offline</div>
+
+                <div className={styles.mainItem}>
+                    <div>{!session && <span>Browser (offline)</span>}</div>
+                    {!session ? (
+                        //@ts-ignore
+                        <button onClick={signIn}>Login</button>
+                    ) : (
+                        <>
+                            saved:{' '}
+                            {lastSave.substring(0, lastSave.indexOf('GMT'))}
+                            <div> Online: {session.account.name}</div>
+                        </>
+                    )}
+                </div>
+                <div></div>
             </main>
             <textarea
                 value={textAreaContent}
                 onChange={(e) => updateTab(tabActive, e.target.value)}
+                placeholder={'>'}
             ></textarea>
         </div>
     );

@@ -5,18 +5,9 @@ body {
     font-family: 'Courier New', Courier, monospace;
 }
 
-button {
-    border: #f2aa4cff 1px solid;
-    color: #f2aa4cff;
-    height: 35px;
-    width: 35px;
-    background-color: #101820ff;
-    margin-left: 0.5rem;
-    border-radius: 50%;
-}
 textarea {
     background-color: #101820ff;
-    color: #f2aa4cff;
+    color: white;
     font-family: 'Courier New', Courier, monospace;
 }
 textarea {
